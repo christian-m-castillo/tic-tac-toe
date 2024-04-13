@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap" rel="stylesheet">
+    <title>Tic Tac Toe</title>
+    <style>
+
+      body {
+        background-color: #333;
+        color: white;
+      }
+
+      .wrapper {
+        display: flex;
+        flex-direction: column;
+      }
+
+      h1 {
+        text-align: center;
+        font-family: "Pixelify Sans", sans-serif;
+        font-size: 3rem;
+        margin: 7px auto 30px auto;
+      }
+
+      table {
+        width: 70vw;
+        max-width: 480px;
+        height: 70vw;
+        max-height: 480px;
+        margin: auto;
+        border-collapse: collapse;
+      }
+
+      td {
+        border: 2px solid #111;
+        border-radius: 0px;
+        background-color: #222;
+        text-align: center;
+        vertical-align: middle;
+        font-family: "Comic Sans MS", sans-serif;
+        font-size: 3.7em;
+        cursor: pointer;
+        width: 33.3%;
+        height: 33.3%;
+
+      }
+
+      button {
+        padding: 2vh 10vh;
+        margin: 50px auto;
+        /*background-color: rgb(105, 185, 160);*/
+        background-color: #cc8400;
+        border: none;
+        border-radius: 12px;
+        color: #fff;
+        font-family: "Pixelify Sans", sans-serif;
+        font-size: 1.5rem;
+        cursor: pointer;
+      }
+
+      .endgame {
+        font-family: "Pixelify Sans", sans-serif;
+        font-size: 2rem;
+        background-color: rgba(100, 130, 130, 1.0);
+        color: #fff;
+        text-align: center;
+        margin: 40px auto -10px auto;
+        border-radius: 15px;
+        width: 70vw;
+        max-width: 480px;
+      }
+
+
+    </style>
+  </head>
+  <body>
+    <div class="wrapper">
+      <h1>Tic Tac Toe</h1>
+      <table>
+        <tr>
+          <td class="cell" id="0"></td>
+          <td class="cell" id="1"></td>
+          <td class="cell" id="2"></td>
+        </tr>
+        <tr>
+          <td class="cell" id="3"></td>
+          <td class="cell" id="4"></td>
+          <td class="cell" id="5"></td>
+        </tr>
+        <tr>
+          <td class="cell" id="6"></td>
+          <td class="cell" id="7"></td>
+          <td class="cell" id="8"></td>
+        </tr>
+      </table>
+      <div class="endgame">
+      </div>
+      <button onClick="startGame()">Reset</button>
+    </div>
+    <script>
+
+      let origBoard;
+      const playerOne = 'X';
+      const playerTwo = 'O';
+      const winCombos = [
+        [0, 1, 2],
+        [3, 4, 5],
+        [6, 7, 8],
+        [0, 3, 6],
+        [1, 4, 7],
+        [2, 5, 8],
+        [0, 4, 8],
+        [2, 4, 6]
+      ]
+      const cells = document.querySelectorAll('.cell');
+      let playerOneTurn = true; 
+
+      startGame();
+
+      function startGame() {
+        document.querySelector('.endgame').style.display = 'none';
+        origBoard = Array.from(Array(9).keys());
+        playerOneTurn = true;
+        for (let i = 0; i < cells.length; i++) {
+          cells[i].innerText = '';
+          cells[i].style.backgroundColor = '#222';
+          cells[i].addEventListener('click', turnClick, false);
+        }
+      }
+
+      function turnClick(square) {
+        console.log(square.target.id);
+        if (typeof origBoard[square.target.id] == 'number') {
+        if (playerOneTurn) {
+        turn(square.target.id, playerOne);
+        playerOneTurn = false;
+        } else {
+        turn(square.target.id, playerTwo);
+        playerOneTurn = true;
+        }
+      }
+      }
+
+      function turn(squareId, player) {
+        origBoard[squareId] = player;
+        document.getElementById(squareId).innerText = player;
+        let gameWon = checkWin(origBoard, player);
+        if (gameWon) gameOver(gameWon);
+        console.log(origBoard);
+      }
+
+      function checkWin(board, player) {
+        let plays = board.reduce((a, e, i) => 
+        (e === player) ? a.concat(i) : a, []);
+        let gameWon = null;
+        for (let[index, win] of winCombos.entries()) {
+          if (win.every(elem => plays.indexOf(elem) > -1)) {
+            gameWon = {index: index, player: player};
+            break;
+          }
+        }
+        return gameWon;
+      }
+
+      function gameOver(gameWon) {
+        for (let index of winCombos[gameWon.index]) {
+          document.getElementById(index).style.backgroundColor = 
+          gameWon.player == playerOne ? "#66b269" : "teal";
+          document.querySelector('.endgame').style.display = 'block';
+          document.querySelector('.endgame').innerText = 
+          gameWon.player == playerOne ? "Player One Wins!" : "Player Two Wins!";
+        }
+        for (let i = 0; i < cells.length; i++) {
+          cells[i].removeEventListener('click', turnClick, false);
+        }
+      }
+
+
+    </script>
+  </body>
+</html>
+
+<!--https://www.youtube.com/watch?v=P2TcQ3h0ipQ-->
+<!--30:26-->
